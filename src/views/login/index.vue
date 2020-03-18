@@ -76,7 +76,7 @@ export default {
           const { redirectUrl } = this.$route.query // 判断有需要跳转的页面没有，有就跳转，没有就去主页
           this.$router.push(redirectUrl || '/')
         } catch (error) {
-          this.$notify({ message: '用户名或验证码错误', duration: 800 })
+          this.$znotify({ message: '用户名或验证码错误' }) // 用了plugin中的小函数修改了显示时间值
         }
       }
     }
