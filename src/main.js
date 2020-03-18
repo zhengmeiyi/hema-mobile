@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import '@/permission'
 import store from './store'
 import Vant from 'vant' // 引入vant
 import 'vant/lib/index.less' // 引入vant的css文件

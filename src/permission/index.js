@@ -10,7 +10,7 @@ router.beforeEach(function (to, from, next) {
     next({
       path: '/login',
       query: {
-        redireectUrl: to.fullPath
+        redirectUrl: to.fullPath
       }
     })
   } else {
