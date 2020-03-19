@@ -2,7 +2,7 @@
   <div class="container">
     <van-tabs>
         <van-tab :title='item.name' v-for="item in channels" :key="item.id">
-          <article-list></article-list>
+          <article-list :channel_id="item.id"></article-list>
         </van-tab>
         <span class="bar_btn">
           <van-icon name='wap-nav'></van-icon>

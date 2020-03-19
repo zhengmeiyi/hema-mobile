@@ -42,9 +42,17 @@ export default {
     return {
       upLoading: false, // 是否加载数据
       finished: false, // 是否加载完成
-      articles: [],
+      articles: [], // 文章
       downLoading: false, // 下拉刷新状态
-      success_text: ''
+      success_text: '', // 下拉刷新成功后显示
+      timestamp: null // 用于时间戳i
+    }
+  },
+  props: {
+    channel_id: {
+      required: true, // 必填项，要求props必须传
+      type: Number, // 要传入prop的类型
+      default: null // 默认
     }
   },
   methods: {
