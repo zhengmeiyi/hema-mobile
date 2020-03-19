@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <van-tabs>
+    <van-tabs >
         <van-tab :title='item.name' v-for="item in channels" :key="item.id">
           <article-list :channel_id="item.id"></article-list>
         </van-tab>
@@ -29,7 +29,7 @@ export default {
   methods: {
     async getMyChannels () {
       const data = await getMyChannels()
-      console.log(data)
+      // console.log(data)
       this.channels = data.channels
     }
   },

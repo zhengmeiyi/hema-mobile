@@ -3,32 +3,32 @@
     <van-pull-refresh v-model="downLoading" @refresh="onRefresh" :success-text="success_text">
       <van-list v-model="upLoading" :finished="finished" @load="onLoad">
         <van-cell-group>
-          <!-- <van-cell v-for="item in articles" :key="item" title="标题" :value="`内容+${item}`"></van-cell> -->
-          <van-cell v-for="item in articles" :key="item">
+          <van-cell v-for="item in articles" :key="item.art_id.toString()">
             <!-- ---------------------文章列表 -->
             <div class="article_item">
-                <!-- -------------------文章标题 -->
-              <h3 class="van-ellipsis">PullRefresh下拉刷新PullRefresh下拉刷新下拉刷新下拉刷新</h3>
-              <div class="img_box">
-            <!-- ---------------------三张图 -->
+              <!-- -------------------文章标题 -->
+              <h3 class="van-ellipsis">{{item.title}}</h3>
+              <div class="img_box" v-if="item.cover.type===3">
+                <!-- ---------------------三张图 -->
 
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[0]" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[1]" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[2]" />
                 <!-- ------------------单图 -->
-                <!-- <van-image class="w100" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" /> -->
+                </div>
+                 <div class="img_box" v-if="item.cover.type===1" >
+                <van-image class="w100" fit="cover" :src="item.cover.images[0]" />
               </div>
               <!-- --------------作者信息 -->
               <div class="info_box">
-                <span>你像一阵风</span>
-                <span>8评论</span>
-                <span>10分钟前</span>
+                <span>{{item.aut_name}}</span>
+                <span>{{item.comm_count}}评论</span>
+                <span>{{item.pubdate}}</span>
                 <span class="close">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
             </div>
-
           </van-cell>
         </van-cell-group>
       </van-list>
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { getArticles } from '@/api/articles'
 export default {
   data () {
     return {
@@ -56,17 +57,32 @@ export default {
     }
   },
   methods: {
-    onLoad () {
+    async onLoad () {
     //   console.log('开始加载')
-      if (this.articles.length > 50) {
-        this.finished = true
+    //   if (this.articles.length > 50) {
+    //     this.finished = true
+    //   } else {
+    //     const arr = Array.from(
+    //       Array(15),
+    //       (value, index) => this.articles.length + index + 1
+    //     )
+    //     this.articles.push(...arr)
+    //     this.upLoading = false
+    //   }
+      console.log(this.channel_id)
+      const data = await getArticles({
+        channel_id: this.channel_id, timestamp: this.timestamp || Date.now()
+      }) // 获取文章列表
+
+      console.log('开始加载文章列表')
+      console.log(data.results)
+      this.articles.push(...data.results) // 从后添加
+      this.upLoading = false // 关闭加载
+      // 如果有历史时间戳：表示还有数据可以加载，否则没有数据了
+      if (data.pre_timestamp) {
+        this.timestamp = data.pre_timestamp
       } else {
-        const arr = Array.from(
-          Array(15),
-          (value, index) => this.articles.length + index + 1
-        )
-        this.articles.push(...arr)
-        this.upLoading = false
+        this.finished = true
       }
     },
     onRefresh () {
