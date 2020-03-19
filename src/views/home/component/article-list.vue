@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     onLoad () {
-      console.log('开始加载')
+    //   console.log('开始加载')
       if (this.articles.length > 50) {
         this.finished = true
       } else {

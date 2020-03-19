@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <van-tabs>
-        <van-tab title='类别1' v-for="item in 10" :key="item">
+        <van-tab :title='item.name' v-for="item in channels" :key="item.id">
           <article-list></article-list>
         </van-tab>
         <span class="bar_btn">
@@ -14,10 +14,27 @@
 
 <script>
 import articleList from './component/article-list'
+import { getMyChannels } from '@/api/channels'
+
 export default {
   name: 'home', // devtools 查看组件时可以看到对应的name
+  data () {
+    return {
+      channels: []
+    }
+  },
   components: {
     'article-list': articleList
+  },
+  methods: {
+    async getMyChannels () {
+      const data = await getMyChannels()
+      console.log(data)
+      this.channels = data.channels
+    }
+  },
+  created () {
+    this.getMyChannels()
   }
 }
 </script>
