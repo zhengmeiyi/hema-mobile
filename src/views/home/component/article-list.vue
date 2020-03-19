@@ -74,8 +74,8 @@ export default {
         channel_id: this.channel_id, timestamp: this.timestamp || Date.now()
       }) // 获取文章列表
 
-      console.log('开始加载文章列表')
-      console.log(data.results)
+      //   console.log('开始加载文章列表')
+      //   console.log(data.results)
       this.articles.push(...data.results) // 从后添加
       this.upLoading = false // 关闭加载
       // 如果有历史时间戳：表示还有数据可以加载，否则没有数据了
@@ -85,16 +85,33 @@ export default {
         this.finished = true
       }
     },
-    onRefresh () {
-      setTimeout(() => {
-        const arr = Array.from(
-          Array(2),
-          (value, index) => '追加' + (index + 1)
-        )
-        this.articles.unshift(...arr)
-        this.downLoading = false
-        this.success_text = `更新了${arr.length}条消息`
+    async onRefresh () {
+    //   setTimeout(() => {
+    //     const arr = Array.from(
+    //       Array(2),
+    //       (value, index) => '追加' + (index + 1)
+    //     )
+    //     this.articles.unshift(...arr)
+    //     this.downLoading = false
+    //     this.success_text = `更新了${arr.length}条消息`
+    //   })
+    // 下拉刷新发送最新的时间戳
+      const data = await getArticles({
+        channel_id: this.channel_id,
+        timestamp: Date.now()
       })
+      this.downLoading = false // 关闭下拉刷新的状态
+      // 如果有返回数据，则替换articles数据
+      if (data.results.length) {
+        this.articles = data.results
+        if (data.pre_timestamp) {
+          this.finished = false
+          this.timestamp = data.pre_timestamp
+        }
+        this.success_text = `更新了${data.results.length}条数据`
+      } else {
+        this.success_text = '当前数据已经是最新了'
+      }
     }
   }
 }
