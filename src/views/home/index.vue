@@ -2,11 +2,7 @@
   <div class="container">
     <van-tabs>
         <van-tab title='类别1' v-for="item in 10" :key="item">
-          <div class="scroll-wrapper">
-            <van-cell-group>
-              <van-cell title="标题" value="内容" v-for="item in 15" :key="item"></van-cell>
-            </van-cell-group>
-          </div>
+          <article-list></article-list>
         </van-tab>
         <span class="bar_btn">
           <van-icon name='wap-nav'></van-icon>
@@ -17,8 +13,12 @@
 </template>
 
 <script>
+import articleList from './component/article-list'
 export default {
-  name: 'home' // devtools 查看组件时可以看到对应的name
+  name: 'home', // devtools 查看组件时可以看到对应的name
+  components: {
+    'article-list': articleList
+  }
 }
 </script>
 
