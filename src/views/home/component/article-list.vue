@@ -69,7 +69,8 @@ export default {
     //     this.articles.push(...arr)
     //     this.upLoading = false
     //   }
-      console.log(this.channel_id)
+    //   console.log(this.channel_id)
+      await this.$sleep()
       const data = await getArticles({
         channel_id: this.channel_id, timestamp: this.timestamp || Date.now()
       }) // 获取文章列表
@@ -96,6 +97,7 @@ export default {
     //     this.success_text = `更新了${arr.length}条消息`
     //   })
     // 下拉刷新发送最新的时间戳
+      await this.$sleep()
       const data = await getArticles({
         channel_id: this.channel_id,
         timestamp: Date.now()
