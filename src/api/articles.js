@@ -8,3 +8,13 @@ export function getArticles (params) {
     params: { with_top: 1, ...params } // 合并数据
   })
 }
+/**
+ * 文章：不感兴趣接口
+ */
+export function dislikearticle (data) {
+  return request({
+    url: '/article/dislikes',
+    method: 'POST',
+    data
+  })
+}

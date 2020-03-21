@@ -39,6 +39,7 @@
 <script>
 import { mapState } from 'vuex'
 import { getArticles } from '@/api/articles'
+import eventbus from '@/utils/eventbus'
 export default {
   data () {
     return {
@@ -119,6 +120,19 @@ export default {
   },
   computed: {
     ...mapState(['user'])
+  },
+  created () {
+    eventbus.$on('delArticle', (artId, channelId) => {
+      if (channelId === this.channel_id) {
+        const index = this.articles.findIndex(item => item.art_id.toString() === artId)
+        if (index > -1) {
+          this.articles.splice(index, 1) // 删除对应下标的数据
+        }
+        if (this.articles.length === 0) { // 数据删光了重新加载数据
+          this.onLoad()
+        }
+      }
+    })
   }
 }
 </script>
