@@ -24,7 +24,7 @@
                 <span>{{item.aut_name}}</span>
                 <span>{{item.comm_count}}评论</span>
                 <span>{{item.pubdate | relTime}}</span>
-                <span class="close">
+                <span @click="$emit('showPopup',item.art_id.toString())" class="close" v-if="user.token">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { getArticles } from '@/api/articles'
 export default {
   data () {
@@ -115,6 +116,9 @@ export default {
         this.success_text = '当前数据已经是最新了'
       }
     }
+  },
+  computed: {
+    ...mapState(['user'])
   }
 }
 </script>

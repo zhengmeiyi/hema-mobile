@@ -2,35 +2,46 @@
   <div class="container">
     <van-tabs >
         <van-tab :title='item.name' v-for="item in channels" :key="item.id">
-          <article-list :channel_id="item.id"></article-list>
+          <article-list @showPopup="showPopup" :channel_id="item.id"></article-list>
         </van-tab>
         <span class="bar_btn">
           <van-icon name='wap-nav'></van-icon>
         </span>
-
     </van-tabs>
+    <van-popup  :style="{ width: '80%' }" v-model="showMoreAction">
+      <more-action></more-action>
+    </van-popup>
   </div>
 </template>
 
 <script>
 import articleList from './component/article-list'
 import { getMyChannels } from '@/api/channels'
+import MoreAction from './component/more-action'
 
 export default {
   name: 'home', // devtools 查看组件时可以看到对应的name
   data () {
     return {
-      channels: []
+      channels: [],
+      showMoreAction: false,
+      articleId: null
     }
   },
   components: {
-    'article-list': articleList
+    'article-list': articleList,
+    'more-action': MoreAction
   },
   methods: {
     async getMyChannels () {
       const data = await getMyChannels()
       // console.log(data)
       this.channels = data.channels
+    },
+    showPopup (artid) {
+      this.showMoreAction = true
+      this.articleId = artid
+      // console.log(this.articleId)
     }
   },
   created () {
