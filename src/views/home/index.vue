@@ -9,7 +9,7 @@
         </span>
     </van-tabs>
     <van-popup  :style="{ width: '80%' }" v-model="showMoreAction">
-      <more-action @dislike="dislikearticle"></more-action>
+      <more-action @dislike="dislikeOrReport('dislike')" @report="dislikeOrReport('report',$event)"></more-action>
     </van-popup>
   </div>
 </template>
@@ -18,7 +18,7 @@
 import articleList from './component/article-list'
 import { getMyChannels } from '@/api/channels'
 import MoreAction from './component/more-action'
-import { dislikearticle } from '@/api/articles'
+import { dislikearticle, reportArticle } from '@/api/articles'
 import eventbus from '@/utils/eventbus'
 
 export default {
@@ -46,10 +46,13 @@ export default {
       this.articleId = artid
       console.log(this.articleId)
     },
-    async dislikearticle () { // 对文章不感兴趣
+    async dislikeOrReport (operateType, type) { // 对文章不感兴趣
       try {
-        await dislikearticle({
+        operateType === 'dislike' ? await dislikearticle({
           target: this.articleId
+        }) : await reportArticle({
+          target: this.articleId,
+          type
         })
         this.$znotify({ type: 'success', message: '操作成功' })
         eventbus.$emit('delArticle', this.articleId, this.channels[this.activeIndex].id)
