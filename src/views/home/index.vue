@@ -4,13 +4,16 @@
         <van-tab :title='item.name' v-for="item in channels" :key="item.id">
           <article-list @showPopup="showPopup" :channel_id="item.id"></article-list>
         </van-tab>
-        <span class="bar_btn">
+        <span class="bar_btn" @click="showEditChannels=true">
           <van-icon name='wap-nav'></van-icon>
         </span>
     </van-tabs>
     <van-popup  :style="{ width: '80%' }" v-model="showMoreAction">
       <more-action @dislike="dislikeOrReport('dislike')" @report="dislikeOrReport('report',$event)"></more-action>
     </van-popup>
+    <van-action-sheet v-model="showEditChannels" title="编辑频道" :round="false">
+      <channel-edit></channel-edit>
+    </van-action-sheet>
   </div>
 </template>
 
@@ -20,6 +23,7 @@ import { getMyChannels } from '@/api/channels'
 import MoreAction from './component/more-action'
 import { dislikearticle, reportArticle } from '@/api/articles'
 import eventbus from '@/utils/eventbus'
+import channelEdit from './component/channel-edit'
 
 export default {
   name: 'home', // devtools 查看组件时可以看到对应的name
@@ -28,12 +32,14 @@ export default {
       channels: [], // 频道数据
       showMoreAction: false, // 弹层组件，默认不显示
       articleId: null, // 当前点击文章的Id
-      activeIndex: 0 // 当前激活的页面
+      activeIndex: 0, // 当前激活的页面
+      showEditChannels: false // 编辑频道页面
     }
   },
   components: {
     'article-list': articleList,
-    'more-action': MoreAction
+    'more-action': MoreAction,
+    'channel-edit': channelEdit
   },
   methods: {
     async getMyChannels () {
@@ -69,6 +75,17 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.van-action-sheet {
+  max-height: 100%;
+  height: 100%;
+  .van-action-sheet__header {
+    background: #3296fa;
+    color: #fff;
+    .van-icon-close {
+      color: #fff;
+    }
+  }
+}
 .van-tabs {
   height: 100%;
   display: flex;
@@ -123,6 +140,14 @@ export default {
       font-size: 20px;
     }
   }
+  // .van-action-sheet {
+  //   max-height: 100%;
+  //   height: 100%;
+  //   .van-action-sheet__header{
+  //     background-color: #fff;
+  //   }
+  // }
+
 }
 
 </style>
