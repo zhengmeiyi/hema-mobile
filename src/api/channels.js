@@ -57,3 +57,15 @@ export function delChannel (id) {
     }
   })
 }
+/**
+ * 添加频道
+ */
+export function addChannel (channel) {
+  return new Promise(function (resolve, reject) {
+    const key = store.state.user.token ? CACHE_CHANNEL_V : CACHE_CHANNEL_T
+    const channels = JSON.parse(localStorage.getItem(key))
+    channels.pish(channel)
+    localStorage.setItem(key, JSON.stringify(channels))
+    resolve()
+  })
+}
