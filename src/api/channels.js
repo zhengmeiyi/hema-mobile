@@ -35,3 +35,25 @@ export function getAllChannels () {
     url: '/channels'
   })
 }
+/**
+ * 删除频道
+ */
+export function delChannel (id) {
+  return new Promise(function (resolve, reject) {
+    const key = store.state.user.token ? CACHE_CHANNEL_V : CACHE_CHANNEL_T
+    // 删除频道时肯定有数据
+    const channels = JSON.parse(localStorage.getItem(key))
+    // 1.用filter删除。直接返回一个新数组
+    // channels = channels.filter(item => item.id === id)
+    // localStorage.setItem(key, JSON.stringify(channels))
+    // 2.找到对应频道的索引
+    const index = channels.findIndex(item => item.id === id)
+    if (index > -1) {
+      channels.splice(index, 1)
+      localStorage.setItem(key, JSON.stringify(channels))
+      resolve()
+    } else {
+      reject(new Error('没有找到对应的频道'))
+    }
+  })
+}
