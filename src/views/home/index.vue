@@ -12,14 +12,18 @@
       <more-action @dislike="dislikeOrReport('dislike')" @report="dislikeOrReport('report',$event)"></more-action>
     </van-popup>
     <van-action-sheet v-model="showEditChannels" title="编辑频道" :round="false">
-      <channel-edit @delChannel="delChannel" :activeIndex="activeIndex" @selectchannel="selectchannel" :channels='channels'></channel-edit>
+      <channel-edit @addChannel="addChannel"
+      @delChannel="delChannel"
+      :activeIndex="activeIndex"
+      @selectchannel="selectchannel"
+      :channels='channels'></channel-edit>
     </van-action-sheet>
   </div>
 </template>
 
 <script>
 import articleList from './component/article-list'
-import { getMyChannels, delChannel } from '@/api/channels'
+import { getMyChannels, delChannel, addChannel } from '@/api/channels'
 import MoreAction from './component/more-action'
 import { dislikearticle, reportArticle } from '@/api/articles'
 import eventbus from '@/utils/eventbus'
@@ -84,6 +88,11 @@ export default {
       } catch (error) {
         this.$znotify({ message: '删除频道失败' })
       }
+    },
+    // 添加频道
+    async addChannel (channel) {
+      await addChannel(channel)
+      this.channels.push(channel)
     }
 
   },
