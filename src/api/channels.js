@@ -1,10 +1,30 @@
 import request from '@/utils/request'
+import store from '@/store'
+const CACHE_CHANNEL_V = 'hema-mobeil-v' // 登录用户的key
+const CACHE_CHANNEL_T = 'hema-mobeil-t' // 游客用户的key
 /**
- * 获取我的频道
+ * 获取我的频道数据，没有参数匿名用户也可以获取数据
  */
+
 export function getMyChannels () {
-  return request({
-    url: '/user/channels'
+  // 改造成本地化的频道
+  // return request({
+  //   url: '/user/channels'
+  // })
+  return new Promise(function (resolve, reject) {
+    // 支持本地化数据，先区分是游客登录还是用户登录，根据有没有token判断
+    const key = store.state.user.token ? CACHE_CHANNEL_V : CACHE_CHANNEL_T
+    const str = localStorage.getItem(key) // 通过缓存key获取缓存中的用户的频道数据
+    if (str) {
+      // 如果本地缓存有数据,把本地数据释放给后面的执行结果
+      resolve({ channels: JSON.parse(str) })
+    } else {
+      // 如果本地缓存没有数据，拉取数据存入缓存
+      request({ url: '/user/channels' }).then(result => {
+        localStorage.setItem(key, JSON.stringify(result.channels))
+        resolve(result)
+      })
+    }
   })
 }
 /**
