@@ -12,14 +12,14 @@
       <more-action @dislike="dislikeOrReport('dislike')" @report="dislikeOrReport('report',$event)"></more-action>
     </van-popup>
     <van-action-sheet v-model="showEditChannels" title="编辑频道" :round="false">
-      <channel-edit :activeIndex="activeIndex" @selectchannel="selectchannel" :channels='channels'></channel-edit>
+      <channel-edit @delChannel="delChannel" :activeIndex="activeIndex" @selectchannel="selectchannel" :channels='channels'></channel-edit>
     </van-action-sheet>
   </div>
 </template>
 
 <script>
 import articleList from './component/article-list'
-import { getMyChannels } from '@/api/channels'
+import { getMyChannels, delChannel } from '@/api/channels'
 import MoreAction from './component/more-action'
 import { dislikearticle, reportArticle } from '@/api/articles'
 import eventbus from '@/utils/eventbus'
@@ -71,7 +71,21 @@ export default {
       const index = this.channels.findIndex(item => item.id === id) // 将点击的频道编号的索引给当前激活的标签
       this.activeIndex = index
       this.showEditChannels = false // 关闭频道编辑面板
+    },
+    // 删除频道
+    async delChannel (id) {
+      try {
+        await delChannel(id)
+        const index = this.channels.findIndex(item => item.id === id)
+        if (index <= this.activeIndex) {
+          this.activeIndex = this.activeIndex - 1 // 如果删除的索引是当前激活索引之前的或者等于当前激活索引，把激活索引往前挪一位
+        }
+        this.channels.splice(index, 1) // 删除对应的频道索引
+      } catch (error) {
+        this.$znotify({ message: '删除频道失败' })
+      }
     }
+
   },
   created () {
     this.getMyChannels()
