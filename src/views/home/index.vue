@@ -12,7 +12,7 @@
       <more-action @dislike="dislikeOrReport('dislike')" @report="dislikeOrReport('report',$event)"></more-action>
     </van-popup>
     <van-action-sheet v-model="showEditChannels" title="编辑频道" :round="false">
-      <channel-edit :channels='channels'></channel-edit>
+      <channel-edit @selectchannel="selectchannel" :channels='channels'></channel-edit>
     </van-action-sheet>
   </div>
 </template>
@@ -66,6 +66,11 @@ export default {
       } catch {
         this.$znotify({ type: 'success', message: '操作失败' })
       }
+    },
+    selectchannel (id) { // 点击编辑频道列表里的频道切换到对应频道
+      const index = this.channels.findIndex(item => item.id === id) // 将点击的频道编号的索引给当前激活的标签
+      this.activeIndex = index
+      this.showEditChannels = false // 关闭频道编辑面板
     }
   },
   created () {
