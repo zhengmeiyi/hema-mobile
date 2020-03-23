@@ -4,9 +4,9 @@
     <van-nav-bar left-arrow title="搜索中心" @click-left="$router.back()"></van-nav-bar>
     <!-- 导航 -->
     <van-search @search="onSearch" v-model.trim="q"  placeholder="请输入搜索关键词" shape="round" />
-    <van-cell-group class="suggest-box" >
-      <van-cell icon="search" v-if="q">
-        <span>java</span>
+    <van-cell-group class="suggest-box" v-if="q">
+      <van-cell @click="toResult(item)" v-for="(item,index) in suggestionList" :key="index" icon="search" >
+        <span>{{item}}</span>
       </van-cell>
     </van-cell-group>
     <div class="history-box" v-if="!q">
@@ -25,13 +25,15 @@
 </template>
 
 <script>
+import { suggestion } from '@/api/articles'
 const key = 'hema-mobile-history'
 export default {
   name: 'search',
   data () {
     return {
-      q: '',
-      historyList: JSON.parse(localStorage.getItem(key) || '[]')
+      q: '', // 搜索内容
+      historyList: JSON.parse(localStorage.getItem(key) || '[]'), // 历史记录列表
+      suggestionList: [] // 联想搜索列表
     }
   },
   methods: {
@@ -61,6 +63,26 @@ export default {
       this.historyList = Array.from(new Set(this.historyList)) // 去重
       localStorage.setItem(key, JSON.stringify(this.historyList)) // 重置缓存
       this.$router.push({ path: '/search/result', query: { q: this.q } }) // 跳转到搜索结果并携带数据
+    },
+    toResult (item) { // 点击联想搜索去搜索结果页
+      this.historyList.push(item)// 加到历史记录
+      this.historyList = Array.from(new Set(this.historyList)) // 去重
+      localStorage.setItem(key, JSON.stringify(this.historyList)) // 加入缓存
+      this.$router.push({ path: '/search/result', query: { q: item } }) // 去搜索结果页并携带数据
+    }
+  },
+  watch: {
+    q () { // 监听q的变化
+      clearTimeout(this.Timer)
+      this.Timer = setTimeout(async () => {
+        if (!this.q) {
+          this.suggestionList = ''
+          return
+        }
+        const data = await suggestion({ q: this.q })
+        // console.log(data)
+        this.suggestionList = data.options
+      }, 500)
     }
   }
 }

@@ -28,3 +28,12 @@ export function reportArticle (data) {
     data
   })
 }
+/***
+ * 联想搜索
+ */
+export function suggestion (params) {
+  return request({
+    url: '/suggestion',
+    params
+  })
+}
