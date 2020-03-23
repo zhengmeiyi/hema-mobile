@@ -37,3 +37,9 @@ export function suggestion (params) {
     params
   })
 }
+export function searchArticle (params) {
+  return request({
+    url: '/search',
+    params
+  })
+}
