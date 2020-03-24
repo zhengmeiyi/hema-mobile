@@ -63,6 +63,7 @@ export default {
         this.$znotify({ message: '操作失败' })
       }
     }
+
   },
   created () {
     this.getArticleInfo()
@@ -104,6 +105,7 @@ export default {
     position:sticky;
     background-color: #fff;
     top:46px;
+    z-index: 2;
     .text {
       flex: 1;
       padding-left: 10px;
