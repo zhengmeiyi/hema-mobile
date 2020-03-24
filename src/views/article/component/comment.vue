@@ -20,7 +20,7 @@
           <p>{{item.content}}</p>
           <p>
             <span class="time">{{item.pubdate | relTime}}</span>&nbsp;
-            <van-tag plain @click="openReply">{{item.reply_count}} 回复</van-tag>
+            <van-tag plain @click="openReply(item.com_id.toString())">{{item.reply_count}} 回复</van-tag>
           </p>
         </div>
       </div>
@@ -32,13 +32,13 @@
       </van-field>
     </div>
      <van-action-sheet v-model="showReply" :round="false" class="reply_dialog" title="回复评论">
-      <van-list v-model="reply.loading" :finished="reply.finished" finished-text="没有更多了">
-        <div class="item van-hairline--bottom van-hairline--top" v-for="index in 8" :key="index">
-          <van-image round width="1rem" height="1rem" fit="fill" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+      <van-list @load="getReply" :immediate-check="false" v-model="reply.loading" :finished="reply.finished" finished-text="没有更多了">
+        <div class="item van-hairline--bottom van-hairline--top" v-for="item in reply.list" :key="item.com_id.toString()">
+          <van-image round width="1rem" height="1rem" fit="fill" :src="item.aut_photo" />
           <div class="info">
-            <p><span class="name">一阵清风</span></p>
-            <p>评论的内容，。。。。</p>
-            <p><span class="time">两天内</span></p>
+            <p><span class="name">{{item.aut_name}}</span></p>
+            <p>{{item.content}}</p>
+            <p><span class="time">{{item.pubdate | relTime}}</span></p>
           </div>
         </div>
       </van-list>
@@ -68,7 +68,8 @@ export default {
         loading: false,
         finished: true,
         offset: null,
-        list: [] // 存放评论的评论
+        list: [], // 存放评论的评论
+        commentId: null
       },
       showReply: false // 评论的评论弹层是否显示
     }
@@ -91,8 +92,29 @@ export default {
         this.offset = data.last_id
       }
     },
-    openReply () { // 评论的评论弹层
+    openReply (comId) { // 评论的评论弹层
       this.showReply = true // 显示评论的评论弹层
+      this.reply.commentId = comId // 当前评论的id
+      this.reply.list = [] // 清空之前的数据
+      this.reply.offset = null // 从第一页开始
+      this.reply.finished = false // 讲finished 打开
+      this.reply.loading = true // 打开加载状态
+      this.getReply() // 请求数据
+    },
+    async getReply () {
+      const params = {
+        type: 'c',
+        source: this.reply.commentId,
+        offset: this.reply.offset
+      }
+      const data = await getComments(params)
+      console.log(data)
+      this.reply.list.push(...data.results)
+      this.reply.loading = false
+      this.reply.finished = data.end_id === data.last_id
+      if (!this.reply.finished) {
+        this.reply.offset = data.last_id
+      }
     }
   }
 
