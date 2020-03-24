@@ -18,6 +18,7 @@
         &nbsp;&nbsp;&nbsp;&nbsp;
         <van-button round size="small" :class="{active:article.attitude===0}" plain icon="delete">不喜欢</van-button>
       </div>
+      <Comment></Comment>
     </div>
     <van-overlay :show="showOverlay" >
       <van-loading color="#1989fa" />
@@ -28,12 +29,16 @@
 <script>
 import { following, unfollowing } from '@/api/user'
 import { getArticleInfo } from '@/api/articles'
+import Comment from './component/comment'
 export default {
   data () {
     return {
       article: [],
       showOverlay: false
     }
+  },
+  components: {
+    Comment
   },
   methods: {
     async getArticleInfo () { // 获取文章详情
