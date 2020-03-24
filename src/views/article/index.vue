@@ -1,31 +1,47 @@
 <template>
   <div class="container">
-    <van-nav-bar left-arrow @click-left="$router.back()" title="文章详情"></van-nav-bar>
+    <van-nav-bar  fixed left-arrow @click-left="$router.back()" title="文章详情"></van-nav-bar>
       <div class="detail">
-      <h3 class="title">文章的标题</h3>
+      <h3 class="title">{{ article.title}}</h3>
       <div class="author">
-        <van-image round width="1rem" height="1rem" fit="fill" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+        <van-image round width="1rem" height="1rem" fit="fill" :src="article.aut_photo" />
         <div class="text">
-          <p class="name">一阵清风</p>
-          <p class="time">两周内</p>
+          <p class="name">{{article.aut_name}}</p>
+          <p class="time">{{article.pubdate | relTime}}</p>
         </div>
-        <van-button round size="small" type="info">+ 关注</van-button>
+        <van-button round size="small" type="info">{{ article.isfollowed ? '已关注':' + 关注'}}</van-button>
       </div>
-      <div class="content">
-        <p>文章的内容</p>
+      <div class="content" v-html="article.content">
       </div>
       <div class="zan">
-        <van-button round size="small" class="active" plain icon="like-o">点赞</van-button>
+        <van-button round size="small" :class="{active : article.attitude===1}" plain icon="like-o">点赞</van-button>
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <van-button round size="small" plain icon="delete">不喜欢</van-button>
+        <van-button round size="small" :class="{active:article.attitude===0}" plain icon="delete">不喜欢</van-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { getArticleInfo } from '@/api/articles'
 export default {
-  name: 'article'
+  data () {
+    return {
+      article: []
+    }
+  },
+  methods: {
+    async getArticleInfo () {
+      const { artId } = this.$route.query
+      // console.log(artId)
+      const data = await getArticleInfo(artId)
+      console.log(data)
+      this.article = data
+    }
+  },
+  created () {
+    this.getArticleInfo()
+  }
 }
 </script>
 
@@ -36,7 +52,7 @@ export default {
   box-sizing: border-box;
 }
 .detail {
-  padding: 20px 10px 44px;
+  padding: 46px 10px 44px;
   .title {
     font-size: 18px;
     line-height: 2;
@@ -83,5 +99,6 @@ export default {
       white-space: pre-wrap;
     }
   }
+
 }
 </style>

@@ -3,7 +3,7 @@
     <van-pull-refresh v-model="downLoading" @refresh="onRefresh" :success-text="success_text">
       <van-list v-model="upLoading" :finished="finished" @load="onLoad">
         <van-cell-group>
-          <van-cell v-for="item in articles" :key="item.art_id.toString()">
+          <van-cell :to="`/article?artId=${item.art_id.toString()}`" v-for="item in articles" :key="item.art_id.toString()">
             <!-- ---------------------文章列表 -->
             <div class="article_item">
               <!-- -------------------文章标题 -->
@@ -24,7 +24,7 @@
                 <span>{{item.aut_name}}</span>
                 <span>{{item.comm_count}}评论</span>
                 <span>{{item.pubdate | relTime}}</span>
-                <span @click="$emit('showPopup',item.art_id.toString())" class="close" v-if="user.token">
+                <span @click.stop="$emit('showPopup',item.art_id.toString())" class="close" v-if="user.token">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
