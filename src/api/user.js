@@ -13,3 +13,24 @@ export function login (data) {
     data: data
   })
 }
+/**
+ * 关注用户
+ */
+export function following (autId) {
+  return request({
+    url: '/user/followings',
+    method: 'post',
+    data: {
+      target: autId
+    }
+  })
+}
+/**
+ * 取消关注用户
+ */
+export function unfollowing (autId) {
+  return request({
+    url: `/user/followings/${autId}`,
+    method: 'DELETE'
+  })
+}

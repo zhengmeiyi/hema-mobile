@@ -9,7 +9,7 @@
           <p class="name">{{article.aut_name}}</p>
           <p class="time">{{article.pubdate | relTime}}</p>
         </div>
-        <van-button round size="small" type="info">{{ article.isfollowed ? '已关注':' + 关注'}}</van-button>
+        <van-button @click="follow" round size="small" type="info">{{ article.is_followed ? '已关注':' + 关注'}}</van-button>
       </div>
       <div class="content" v-html="article.content">
       </div>
@@ -19,24 +19,44 @@
         <van-button round size="small" :class="{active:article.attitude===0}" plain icon="delete">不喜欢</van-button>
       </div>
     </div>
+    <van-overlay :show="showOverlay" >
+      <van-loading color="#1989fa" />
+    </van-overlay>
   </div>
 </template>
 
 <script>
+import { following, unfollowing } from '@/api/user'
 import { getArticleInfo } from '@/api/articles'
 export default {
   data () {
     return {
-      article: []
+      article: [],
+      showOverlay: false
     }
   },
   methods: {
-    async getArticleInfo () {
+    async getArticleInfo () { // 获取文章详情
+      this.showOverlay = true
+
       const { artId } = this.$route.query
       // console.log(artId)
       const data = await getArticleInfo(artId)
       console.log(data)
       this.article = data
+      this.showOverlay = false
+    },
+    async follow () { // 关注或取消关注
+      try {
+        if (this.article.isfollowed) { // 取消关注
+          await unfollowing(this.article.aut_id)
+        } else { // 关注
+          await following(this.article.aut_id)
+        }
+        this.article.is_followed = !this.article.is_followed // 电脑端会自动变更，移动端不会自动变更，手动设置
+      } catch (error) {
+        this.$znotify({ message: '操作失败' })
+      }
     }
   },
   created () {
@@ -50,6 +70,14 @@ export default {
   height: 100%;
   overflow-y: auto;
   box-sizing: border-box;
+}
+.van-overlay {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none;
 }
 .detail {
   padding: 46px 10px 44px;
