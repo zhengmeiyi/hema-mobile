@@ -61,5 +61,12 @@ export function getComments (params) {
   })
 }
 /**
- * 获取评论的评论
+ * 添加评论
  */
+export function Comments (data) {
+  return request({
+    url: '/comments',
+    method: 'post',
+    data
+  })
+}

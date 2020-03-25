@@ -47,7 +47,7 @@ export default {
       const { artId } = this.$route.query
       // console.log(artId)
       const data = await getArticleInfo(artId)
-      console.log(data)
+      // console.log(data)
       this.article = data
       this.showOverlay = false
     },
