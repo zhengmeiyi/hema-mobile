@@ -60,3 +60,13 @@ export function updataPhoto (data) {
     data
   })
 }
+/**
+ * 修改用户信息
+ */
+export function saveUserInfo (data) {
+  return request({
+    url: '/user/profile',
+    method: 'patch',
+    data: { ...data, photo: null }
+  })
+}
