@@ -51,5 +51,12 @@ export function getUserProfile () {
   })
 }
 /**
- * 修改用户资料
+ * 修改用户头像
  */
+export function updataPhoto (data) {
+  return request({
+    url: '/user/photo',
+    method: 'patch',
+    data
+  })
+}

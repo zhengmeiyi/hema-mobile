@@ -2,14 +2,14 @@
     <div class="container">
     <van-nav-bar left-arrow @click-left="$router.back()" title="编辑资料" right-text="保存" ></van-nav-bar>
     <van-cell-group>
-      <van-cell  is-link title="头像"  center>
+      <van-cell @click="showPhoto=true"  is-link title="头像"  center>
         <van-image
           slot="default"
           width="1.5rem"
           height="1.5rem"
           fit="cover"
           round
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
+          :src="user.photo"
         />
       </van-cell>
       <van-cell @click="showName=true" is-link title="名称" :value="user.name" />
@@ -21,7 +21,7 @@
       <!-- 内容 -->
       <!-- 1 本地相册选择图片 -->
       <!-- 2 拍照 -->
-       <van-cell is-link title="本地相册选择图片"></van-cell>
+       <van-cell @click="openFileDialog" is-link title="本地相册选择图片"></van-cell>
        <van-cell is-link title="拍照"></van-cell>
     </van-popup>
     <!-- 昵称弹层组件 -->
@@ -43,13 +43,15 @@
           :max-date="maxDate"
          />
     </van-popup>
+    <!-- 上传文件控件 -->
+    <input ref="myFile" @change="upload" type="file" style="display:none">
 
   </div>
 </template>
 
 <script>
 import dayjs from 'dayjs'
-import { getUserProfile } from '@/api/user'
+import { getUserProfile, updataPhoto } from '@/api/user'
 export default {
   name: 'profile',
   data () {
@@ -94,6 +96,17 @@ export default {
     },
     async getUserProfile () { // 获取用户资料
       this.user = await getUserProfile()
+    },
+    openFileDialog () { // 上传头像
+      this.$refs.myFile.click()
+    },
+    async upload (params) {
+      console.log(params)
+      const data = new FormData()
+      data.append('photo', this.$refs.myFile.files[0])
+      const result = await updataPhoto(data)
+      this.user.photo = result.photo
+      this.showPhoto = false
     }
   },
   created () {
