@@ -34,3 +34,11 @@ export function unfollowing (autId) {
     method: 'DELETE'
   })
 }
+/**
+ * 获取用户资料
+ */
+export function getUserInfo () {
+  return request({
+    url: '/user'
+  })
+}
