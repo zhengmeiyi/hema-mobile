@@ -42,3 +42,14 @@ export function getUserInfo () {
     url: '/user'
   })
 }
+/**
+ * 获取用户资料
+ */
+export function getUserProfile () {
+  return request({
+    url: 'user/profile'
+  })
+}
+/**
+ * 修改用户资料
+ */
