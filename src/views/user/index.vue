@@ -40,14 +40,16 @@
       <van-cell icon="edit" title="编辑资料" to="/user/profile" is-link />
       <van-cell icon="chat-o" title="小智同学" to="/user/chat" is-link />
       <van-cell icon="setting-o" title="系统设置" is-link />
-      <van-cell icon="warning-o" title="退出登录" to="/login" is-link />
+      <van-cell icon="warning-o" title="退出登录" @click="lgout" is-link />
     </van-cell-group>
   </div>
 
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import { getUserInfo } from '@/api/user'
+
 export default {
   name: 'user',
   data () {
@@ -56,8 +58,18 @@ export default {
     }
   },
   methods: {
-    async getUserInfo () {
+    ...mapMutations(['delUser']),
+    async getUserInfo () { // 获取用户信息
       this.userInfo = await getUserInfo()
+    },
+    async lgout () { // 退出登录
+      try {
+        await this.$dialog.confirm({ message: '确定要退出嘛?' })
+        this.delUser()
+        this.$router.push('/login')
+      } catch (error) {
+
+      }
     }
   },
   created () {
