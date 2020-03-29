@@ -58,9 +58,10 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['delUser']),
+    ...mapMutations(['delUser', 'updatePhoto']),
     async getUserInfo () { // 获取用户信息
       this.userInfo = await getUserInfo()
+      this.updatePhoto({ photo: this.userInfo.photo }) // 把获取的头像给state
     },
     async lgout () { // 退出登录
       try {

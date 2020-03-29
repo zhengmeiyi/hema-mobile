@@ -52,6 +52,7 @@
 <script>
 import dayjs from 'dayjs'
 import { getUserProfile, updataPhoto, saveUserInfo } from '@/api/user'
+import { mapMutations } from 'vuex'
 export default {
   name: 'profile',
   data () {
@@ -74,6 +75,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['updatePhoto']),
     btnName () { // 用户名称
       if (this.user.name.length < 1 || this.user.name.length > 7) {
         this.nameMsg = '请输入长度控制在1-7之内'
@@ -105,6 +107,7 @@ export default {
       data.append('photo', this.$refs.myFile.files[0])
       const result = await updataPhoto(data)
       this.user.photo = result.photo
+      this.updatePhoto = [{ photo: this.user.photo }]
       this.showPhoto = false
     },
     async saveUser () {

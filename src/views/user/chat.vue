@@ -1,15 +1,16 @@
 <template>
   <div class="container">
-    <van-nav-bar left-arrow @click-left="$router.back()" title="小智同学"></van-nav-bar>
-     <div class="chat-list">
-      <div class="chat-item left">
-        <van-image fit="cover" round src="https://img.yzcdn.cn/vant/cat.jpeg" />
-        <div class="chat-pao">ewqewq</div>
+    <van-nav-bar fixed left-arrow @click-left="$router.back()" title="小智同学"></van-nav-bar>
+     <div class="chat-list" ref="mylist">
+      <div class="chat-item" :class='{left:item.name==="xz" , right:item.name!=="xz"}' v-for="(item,index) in list" :key="index">
+        <van-image v-if="item.name==='xz'" fit="cover" round :src='headimg' />
+        <div class="chat-pao">{{item.msg}}</div>
+        <van-image v-if="item.name!=='xz'"  fit="cover" round :src="photo" />
       </div>
-      <div class="chat-item right">
+      <!-- <div class="chat-item right">
         <div class="chat-pao">ewqewq</div>
-        <van-image  fit="cover" round src="https://img.yzcdn.cn/vant/cat.jpeg" />
-      </div>
+        <van-image  fit="cover" round :src="photo" />
+      </div> -->
     </div>
     <div class="reply-container van-hairline--top">
       <van-field v-model="value" placeholder="说点什么...">
@@ -21,13 +22,62 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import headimg from '@/assets/head.jpg'
+import io from 'socket.io-client'
 export default {
   name: 'chat',
   data () {
     return {
       value: '',
-      loading: false
+      loading: false,
+      headimg, // 小智头像
+      list: [] // 聊天记录
     }
+  },
+  computed: {
+    ...mapState(['photo', 'user'])
+  },
+  created () {
+    // 初始化websocket连接
+    this.socket = io('http://ttapi.research.itcast.cn', {
+      query: {
+        token: this.user.token
+      }
+    })
+    // 监听连接成功后执行
+    this.socket.on('connect', () => {
+      this.list.push({ msg: '你好啊，我是小智', name: 'xz' })
+    })
+    this.socket.on('message', data => {
+      console.log(data)
+      this.list.push({ ...data, name: 'xz' })
+      this.scrollBottom()
+    })
+  },
+  methods: {
+    async send () { // 发送消息
+      if (!this.value) return false // 消息不能为空
+      this.loading = true // 打开加载状态，避免重复提交
+      await this.$sleep(500) // 强制休眠
+      const obj = {
+        msg: this.value,
+        timestamp: Date.now()
+      }
+      this.socket.emit('message', obj) // 发送消息
+      this.list.push(obj) // 把消息添加到列表
+      this.value = '' // 清空输入框
+      this.loading = false // 关闭加载状态
+      this.scrollBottom()
+    },
+    scrollBottom () {
+      this.$nextTick(() => {
+        this.$refs.mylist.scrollTop = this.$refs.mylist.scrollHeight
+      })
+    }
+  },
+  beforeDestroy () { // 实例销毁前关闭连接
+    this.socket.close()
   }
 }
 </script>
