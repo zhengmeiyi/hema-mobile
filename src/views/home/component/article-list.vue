@@ -1,5 +1,5 @@
 <template>
-  <div class="scroll-wrapper">
+  <div class="scroll-wrapper" @scroll="remember" ref="myscroll">
     <van-pull-refresh v-model="downLoading" @refresh="onRefresh" :success-text="success_text">
       <van-list v-model="upLoading" :finished="finished" @load="onLoad">
         <van-cell-group>
@@ -48,7 +48,8 @@ export default {
       articles: [], // 文章
       downLoading: false, // 下拉刷新状态
       success_text: '', // 下拉刷新成功后显示
-      timestamp: null // 用于时间戳i
+      timestamp: null, // 用于时间戳i
+      scrollTop: 0 // 用于存放当前实例滚动的位置
     }
   },
   props: {
@@ -116,6 +117,12 @@ export default {
       } else {
         this.success_text = '当前数据已经是最新了'
       }
+    },
+    remember (event) { // 记录当前滚动位置事件
+      clearTimeout(this.timer) // 函数防抖
+      this.timer = setTimeout(() => {
+        this.scrollTop = event.target.scrollTop
+      }, 500)
     }
   },
   computed: {
@@ -133,6 +140,20 @@ export default {
         }
       }
     })
+    eventbus.$on('changeTab', (id) => { // 监听切换标签，滑动滚动条
+      if (id === this.channel_id) {
+        this.$nextTick(() => {
+          if (this.$refs.myscroll && this.scrollTop) {
+            this.$refs.myscroll.scrollTop = this.scrollTop
+          }
+        })
+      }
+    })
+  },
+  activated () {
+    if (this.$refs.myscroll && this.scrollTop) {
+      this.$refs.myscroll.scrollTop = this.scrollTop
+    }
   }
 }
 </script>

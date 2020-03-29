@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <van-tabs v-model="activeIndex">
-        <van-tab :title='item.name' v-for="item in channels" :key="item.id">
+    <van-tabs v-model="activeIndex" @change="changeTab">
+        <van-tab  :title='item.name' v-for="item in channels" :key="item.id">
           <article-list @showPopup="showPopup" :channel_id="item.id"></article-list>
         </van-tab>
         <span class="bar_btn" @click="showEditChannels=true">
@@ -93,6 +93,9 @@ export default {
     async addChannel (channel) {
       await addChannel(channel)
       this.channels.push(channel)
+    },
+    changeTab () { // 切换标签时触发
+      eventbus.$emit('changeTab', this.channels[this.activeIndex].id)
     }
 
   },
